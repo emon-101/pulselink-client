@@ -45,7 +45,7 @@ export default function Banner() {
           </p>
 
           <div className="mt-10 flex flex-col gap-3 sm:flex-row">
-            <Link href="/auth/register">
+            <Link href="/auth/registration">
               <Button variant="primary" size="lg" className="min-w-[200px] gap-2">
                 Join as a Donor
                 <ArrowRight className="h-4 w-4" />
