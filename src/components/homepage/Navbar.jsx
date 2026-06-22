@@ -97,7 +97,7 @@ export default function Navbar({ user = null }) {
                 <Dropdown.Menu>
                   <Dropdown.Item id="dashboard" textValue="Dashboard">
                     <LayoutDashboard className="h-4 w-4" />
-                    <Label>Dashboard</Label>
+                    <Link href={'/dashboard'} className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-[var(--pl-ink-soft)] hover:bg-[var(--pl-surface)]">Dashboard</Link>
                   </Dropdown.Item>
                   <Dropdown.Item
                     id="logout"
