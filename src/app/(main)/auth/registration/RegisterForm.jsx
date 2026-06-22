@@ -413,7 +413,7 @@ export default function RegisterForm() {
           <p className="mt-4 text-center text-sm text-[var(--pl-ink-soft)]">
             Already have an account?{" "}
             <a
-              href="/login"
+              href="/auth/login"
               className="font-medium text-[var(--pl-primary)] hover:underline"
             >
               Log in
