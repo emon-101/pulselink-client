@@ -26,10 +26,6 @@ export const metadata = {
 };
 
 export default function RootLayout({ children }) {
-  // TODO: replace with real session from Better Auth, e.g.:
-  // const session = await auth.api.getSession({ headers: await headers() });
-  // const user = session?.user ?? null;
-  const user = null;
 
   return (
     <html
@@ -38,9 +34,7 @@ export default function RootLayout({ children }) {
       suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col">
-        <Navbar user={user} />
         <main className="flex-1">{children}</main>
-        <Footer />
       </body>
     </html>
   );

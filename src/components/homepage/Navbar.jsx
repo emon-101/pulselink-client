@@ -5,14 +5,7 @@ import Link from "next/link";
 import { Button, Dropdown, Label, Avatar, AvatarFallback } from "@heroui/react";
 import { Heart, Menu, X, LayoutDashboard, LogOut } from "lucide-react";
 
-/**
- * PulseLink Navbar
- * HeroUI v3 removed the <Navbar> component entirely — this is built manually
- * with semantic HTML + Tailwind, per the official v3 migration guide.
- *
- * Props:
- * - user: null when logged out, or { name, email, avatarUrl, role } when logged in
- */
+
 export default function Navbar({ user = null }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -33,11 +26,11 @@ export default function Navbar({ user = null }) {
     : "";
 
   return (
-    <nav className="sticky top-0 z-50 w-full border-b border-[var(--pl-border)] bg-[var(--pl-bg)]/80 backdrop-blur-lg">
+    <nav className="sticky top-0 z-50 w-full border-b border-(--pl-border) bg-(--pl-bg)/80 backdrop-blur-lg">
       <header className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 shrink-0">
-          <span className="relative flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--pl-primary)]">
+          <span className="relative flex h-8 w-8 items-center justify-center rounded-lg bg-(--pl-primary)">
             <Heart className="h-4.5 w-4.5 text-white" strokeWidth={2.5} fill="currentColor" />
           </span>
           <span className="font-[var(--pl-font-display)] text-lg font-bold tracking-tight text-[var(--pl-ink)]">
@@ -70,7 +63,7 @@ export default function Navbar({ user = null }) {
         {/* Right side */}
         <div className="hidden items-center gap-3 md:flex">
           {!user ? (
-            <Link href="/login">
+            <Link href="/auth/login">
               <Button variant="primary" size="md">
                 Login
               </Button>
