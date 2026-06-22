@@ -18,6 +18,7 @@ import { Camera, Heart, Loader2, User } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
 import districts from "@/data/districts.json";
 import upazilas from "@/data/upazilas.json";
+import { toast } from "sonner";
 
 const BLOOD_GROUPS = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
 
@@ -132,7 +133,7 @@ export default function RegisterForm() {
 
     setIsSubmitting(true);
     try {
-      const { error } = await authClient.signUp.email({
+      const { data, error } = await authClient.signUp.email({
         name,
         email,
         password,
@@ -145,10 +146,14 @@ export default function RegisterForm() {
 
       if (error) {
         setSubmitError(error.message || "Registration failed. Try again.");
+        toast.error("Failed to Registration!");
         return;
       }
 
-      router.push("/dashboard");
+      if(data) {
+        toast.success("Registration Successful!");
+        router.push("/dashboard");
+      }
     } catch (err) {
       setSubmitError(err.message || "Something went wrong. Try again.");
     } finally {

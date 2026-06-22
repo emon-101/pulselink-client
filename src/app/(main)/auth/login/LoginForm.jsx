@@ -15,6 +15,7 @@ import {
 import { Heart, Loader2 } from "lucide-react";
 
 import { authClient } from "@/lib/auth-client";
+import { toast } from "sonner";
 
 export default function LoginForm() {
   const router = useRouter();
@@ -33,7 +34,7 @@ export default function LoginForm() {
 
     setIsSubmitting(true);
     try {
-      const { error } = await authClient.signIn.email({
+      const { data, error } = await authClient.signIn.email({
         email,
         password,
         rememberMe,
@@ -46,9 +47,13 @@ export default function LoginForm() {
         return;
       }
 
-      router.push("/");
+      if(data) {
+        toast.success("Login Successful!");
+        router.push("/dashboard");
+      }
     } catch (err) {
       setSubmitError(err.message || "Something went wrong. Try again.");
+      toast.error("Login failed!");
     } finally {
       setIsSubmitting(false);
     }
@@ -118,17 +123,6 @@ export default function LoginForm() {
               />
               <FieldError className="text-xs text-[var(--pl-danger)]" />
             </TextField>
-
-            <Checkbox name="rememberMe" value="true">
-              <Checkbox.Control>
-                <Checkbox.Indicator />
-              </Checkbox.Control>
-              <Checkbox.Content>
-                <Label className="text-sm text-[var(--pl-ink-soft)]">
-                  Remember me
-                </Label>
-              </Checkbox.Content>
-            </Checkbox>
           </div>
 
           {submitError && (
@@ -157,7 +151,7 @@ export default function LoginForm() {
           <p className="mt-4 text-center text-sm text-[var(--pl-ink-soft)]">
             New to PulseLink?{" "}
             <a
-              href="/register"
+              href="/auth/registration"
               className="font-medium text-[var(--pl-primary)] hover:underline"
             >
               Join as a donor
