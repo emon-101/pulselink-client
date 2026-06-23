@@ -84,6 +84,7 @@ export default function CreateDonationRequestForm({ user }) {
     setIsSubmitting(true);
     try {
       const result = await createDonationRequest({
+        requesterId: user?.id,
         requesterName: user?.name,
         requesterEmail: user?.email,
         recipientName,
@@ -102,11 +103,11 @@ export default function CreateDonationRequestForm({ user }) {
         setSubmitError("Couldn't submit your request. Please try again.");
         return;
       }
-      toast.success("Donation Request Create Successfully");
+      toast.success("Donation Request Submitted!");
       router.push("/dashboard/my-donation-requests");
     } catch (err) {
       setSubmitError(err.message || "Something went wrong. Please try again.");
-      toast.error("Somthing went wrong. Please try again.");
+      toast.error("Something went wrong. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -284,6 +285,10 @@ export default function CreateDonationRequestForm({ user }) {
           </TextField>
         </div>
 
+        {/* Native date/time inputs — HeroUI's DateField/TimeField use
+            @internationalized/date value objects, which would add real
+            complexity for no benefit here since the backend just wants
+            plain "YYYY-MM-DD" / "HH:MM" strings anyway. */}
         <div className="mt-5 grid gap-5 sm:grid-cols-2">
           <TextField name="donationDate" isRequired className="flex flex-col gap-1.5">
             <Label className="text-sm font-medium text-[var(--pl-ink)]">
