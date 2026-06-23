@@ -3,12 +3,13 @@
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
 
 export const serverMutation = async(path, data, method = 'POST') => {
+    const hasBody = method !== 'DELETE' && method !== 'GET';
     const res = await fetch(`${baseUrl}${path}`, {
         method: method,
-        headers: {
+        headers: hasBody ? {
             'Content-Type' : 'application/json',
-        },
-        body: JSON.stringify(data),
+        } : undefined,
+        body: hasBody ? JSON.stringify(data) : undefined,
     });
     return res.json();
 }

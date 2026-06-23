@@ -10,3 +10,11 @@ export const getMyDonationRequests = async(requesterId) => {
     if(!requesterId) return [];
     return serverQuery('/api/donation-request', { requesterId });
 }
+
+export const updateDonationRequest = async(id, updates) => {
+    return serverMutation(`/api/donation-request/${id}`, updates, 'PATCH');
+}
+
+export const deleteDonationRequest = async(id) => {
+    return serverMutation(`/api/donation-request/${id}`, null, 'DELETE');
+}

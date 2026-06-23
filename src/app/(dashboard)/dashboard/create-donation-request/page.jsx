@@ -6,7 +6,7 @@ const CreateDonationRequest = async () => {
   const user = await getUserSession();
 
   if (!user) {
-    redirect("/login");
+    redirect("/auth/login");
   }
 
   if (user.status === "blocked") {
