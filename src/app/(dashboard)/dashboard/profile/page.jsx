@@ -6,7 +6,7 @@ export default async function ProfilePage() {
   const user = await getUserSession();
 
   if (!user) {
-    redirect("/login");
+    redirect("/auth/login");
   }
 
   return <ProfileForm user={user} />;

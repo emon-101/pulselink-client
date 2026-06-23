@@ -7,12 +7,6 @@ import { LogOut, Loader2 } from "lucide-react";
 
 import { authClient } from "@/lib/auth-client";
 
-/**
- * Bottom-of-sidebar user card: avatar, name, email, logout.
- * Client component because logout needs interactivity — the parent
- * DashboardSidebar stays an async server component and just passes the
- * plain `user` object down as a prop.
- */
 export default function SidebarUserCard({ user }) {
   const router = useRouter();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
@@ -34,7 +28,7 @@ export default function SidebarUserCard({ user }) {
       await authClient.signOut({
         fetchOptions: {
           onSuccess: () => {
-            router.push("/login");
+            router.push("/auth/login");
             router.refresh();
           },
         },
