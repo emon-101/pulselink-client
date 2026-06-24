@@ -135,7 +135,7 @@ export default function RecentDonationRequests({ requests }) {
                     )}
 
                     <Link
-                      href={`/dashboard/my-donation-requests/${id}`}
+                      href={`/donation-requests/${id}`}
                       title="View"
                       className="flex h-8 w-8 items-center justify-center rounded-lg text-[var(--pl-ink-soft)] transition-colors hover:bg-[var(--pl-surface)]"
                     >
