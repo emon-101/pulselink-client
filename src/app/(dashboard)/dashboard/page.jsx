@@ -4,6 +4,7 @@ import { getMyDonationRequests } from "@/lib/actions/donation_request";
 import { getDashboardStats } from "@/lib/actions/stats";
 import RecentDonationRequests from "@/components/dashboard/RecentDonationRequests";
 import DashboardStatCards from "@/components/dashboard/DashboardStatCards";
+import DonationRequestTrendsChart from "@/components/dashboard/DonationRequestTrendsChart";
 
 const DashboardPage = async () => {
   const user = await getUserSession();
@@ -11,6 +12,7 @@ const DashboardPage = async () => {
 
   const isDonor = !user?.role || user.role === "donor";
   const isStaff = user?.role === "admin" || user?.role === "volunteer";
+  const isAdmin = user?.role === "admin";
 
   let recentRequests = [];
   let stats = null;
@@ -51,6 +53,14 @@ const DashboardPage = async () => {
             totalFunding="$0"
             totalRequests={stats?.totalRequests ?? 0}
           />
+        </div>
+      )}
+
+      {/* Admin only — daily/weekly/monthly donation request trend chart.
+          Volunteers see the stat cards above but not this. */}
+      {isAdmin && (
+        <div className="mt-8">
+          <DonationRequestTrendsChart />
         </div>
       )}
 

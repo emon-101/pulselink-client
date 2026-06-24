@@ -10,6 +10,10 @@ export const getAllDonationRequests = async() => {
     return serverQuery('/api/donation-request');
 }
 
+export const getDonationRequestTrends = async(range = 'day') => {
+    return serverQuery('/api/donation-request/trends', { range });
+}
+
 export const getMyDonationRequests = async(requesterId) => {
     if(!requesterId) return [];
     return serverQuery('/api/donation-request', { requesterId });
