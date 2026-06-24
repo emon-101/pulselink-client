@@ -6,6 +6,10 @@ export const createDonationRequest = async(newDonationRequest) => {
     return serverMutation('/api/donation-request', newDonationRequest);
 }
 
+export const getAllDonationRequests = async() => {
+    return serverQuery('/api/donation-request');
+}
+
 export const getMyDonationRequests = async(requesterId) => {
     if(!requesterId) return [];
     return serverQuery('/api/donation-request', { requesterId });

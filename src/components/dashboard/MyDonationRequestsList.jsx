@@ -2,8 +2,8 @@
 
 import { useMemo, useState } from "react";
 import { Select, ListBox } from "@heroui/react";
-import RecentDonationRequests from "./RecentDonationRequests";
 
+import RecentDonationRequests from "@/components/dashboard/RecentDonationRequests";
 
 const STATUS_OPTIONS = [
   { id: "all", label: "All statuses" },
@@ -13,7 +13,19 @@ const STATUS_OPTIONS = [
   { id: "canceled", label: "Canceled" },
 ];
 
-export default function MyDonationRequestsList({ requests }) {
+/**
+ * Owns the status-filter state for the full request list — used by both
+ * "My Donation Requests" (donor, own requests, full control) and "All
+ * Blood Donation Request" (admin/volunteer, every request, permission
+ * level varies — see canManage).
+ *
+ * Props:
+ * - requests: full unfiltered set to slice client-side
+ * - canManage: forwarded to RecentDonationRequests; false hides edit and
+ *   delete, leaving only status done/cancel buttons (volunteer's one
+ *   allowed action per spec). Defaults to true.
+ */
+export default function MyDonationRequestsList({ requests, canManage = true }) {
   const [statusFilter, setStatusFilter] = useState("all");
 
   const sorted = useMemo(
@@ -66,7 +78,7 @@ export default function MyDonationRequestsList({ requests }) {
       </div>
 
       {filtered.length > 0 ? (
-        <RecentDonationRequests requests={filtered} />
+        <RecentDonationRequests requests={filtered} canManage={canManage} />
       ) : (
         <div className="rounded-2xl border border-dashed border-[var(--pl-border)] bg-[var(--pl-surface)] p-10 text-center">
           <p className="text-sm text-[var(--pl-ink-soft)]">

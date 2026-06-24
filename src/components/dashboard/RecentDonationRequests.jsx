@@ -19,7 +19,7 @@ const STATUS_STYLES = {
   canceled: "bg-[var(--pl-ink-soft)]/10 text-[var(--pl-ink-soft)]",
 };
 
-export default function RecentDonationRequests({ requests }) {
+export default function RecentDonationRequests({ requests, canManage = true }) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [actingId, setActingId] = useState(null);
@@ -142,18 +142,22 @@ export default function RecentDonationRequests({ requests }) {
                       <Eye className="h-4 w-4" />
                     </Link>
 
-                    <Link
-                      href={`/dashboard/my-donation-requests/${id}/edit`}
-                      title="Edit"
-                      className="flex h-8 w-8 items-center justify-center rounded-lg text-[var(--pl-ink-soft)] transition-colors hover:bg-[var(--pl-surface)]"
-                    >
-                      <Pencil className="h-4 w-4" />
-                    </Link>
+                    {canManage && (
+                      <>
+                        <Link
+                          href={`/dashboard/my-donation-requests/${id}/edit`}
+                          title="Edit"
+                          className="flex h-8 w-8 items-center justify-center rounded-lg text-[var(--pl-ink-soft)] transition-colors hover:bg-[var(--pl-surface)]"
+                        >
+                          <Pencil className="h-4 w-4" />
+                        </Link>
 
-                    <DeleteRequestDialog
-                      onConfirm={() => handleDelete(id)}
-                      isDeleting={isActing}
-                    />
+                        <DeleteRequestDialog
+                          onConfirm={() => handleDelete(id)}
+                          isDeleting={isActing}
+                        />
+                      </>
+                    )}
                   </div>
                 </td>
               </motion.tr>
