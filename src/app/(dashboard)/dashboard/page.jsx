@@ -1,14 +1,19 @@
 import Link from "next/link";
 import { getUserSession } from "@/lib/core/session";
 import { getMyDonationRequests } from "@/lib/actions/donation_request";
+import { getDashboardStats } from "@/lib/actions/stats";
 import RecentDonationRequests from "@/components/dashboard/RecentDonationRequests";
+import DashboardStatCards from "@/components/dashboard/DashboardStatCards";
 
 const DashboardPage = async () => {
   const user = await getUserSession();
   const firstName = user?.name?.split(" ")[0] || "there";
 
   const isDonor = !user?.role || user.role === "donor";
+  const isStaff = user?.role === "admin" || user?.role === "volunteer";
+
   let recentRequests = [];
+  let stats = null;
 
   if (isDonor) {
     const allRequests = await getMyDonationRequests(user?.id);
@@ -17,6 +22,10 @@ const DashboardPage = async () => {
     recentRequests = [...(allRequests || [])]
       .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
       .slice(0, 3);
+  }
+
+  if (isStaff) {
+    stats = await getDashboardStats();
   }
 
   return (
@@ -29,6 +38,21 @@ const DashboardPage = async () => {
         on top of every connection PulseLink helps you make — all from one
         place.
       </p>
+
+      {/* Admin / volunteer: featured stat cards. Same welcome section as
+          the donor dashboard above, different content below it. */}
+      {isStaff && (
+        <div className="mt-8">
+          <DashboardStatCards
+            totalDonors={stats?.totalDonors ?? 0}
+            // No funding backend yet (bonus task per spec) — static
+            // placeholder until payment integration exists. Swap this
+            // for a real value from getDashboardStats() once it does.
+            totalFunding="$0"
+            totalRequests={stats?.totalRequests ?? 0}
+          />
+        </div>
+      )}
 
       {/* Recent donation requests — hidden entirely if the donor hasn't
           made any request yet, per spec. */}
