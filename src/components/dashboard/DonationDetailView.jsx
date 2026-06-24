@@ -336,8 +336,12 @@ export function DonationDetailView({ request, user }) {
             </div>
           ) : (
             <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
+              {/* variant="danger" is a real variant (confirmed against the
+                  installed button.styles.js); the inline accent-color
+                  style on top is kept so it matches the brand coral
+                  exactly rather than the library's default danger red. */}
               <Button
-                color="danger"
+                variant="danger"
                 size="lg"
                 className="gap-2 rounded-2xl px-8 font-bold shadow-md"
                 style={{ background: "var(--pl-accent)" }}
@@ -433,7 +437,7 @@ export function DonationDetailView({ request, user }) {
               <Modal.Footer className="border-t border-[var(--pl-border)] pt-4">
                 {done ? (
                   <Button
-                    variant="flat"
+                    variant="ghost"
                     className="rounded-xl font-semibold"
                     onPress={handleClose}
                   >
@@ -442,7 +446,7 @@ export function DonationDetailView({ request, user }) {
                 ) : (
                   <>
                     <Button
-                      variant="flat"
+                      variant="ghost"
                       className="rounded-xl"
                       onPress={handleClose}
                       isDisabled={confirming}
@@ -451,7 +455,7 @@ export function DonationDetailView({ request, user }) {
                     </Button>
                     <motion.div whileTap={{ scale: 0.96 }}>
                       <Button
-                        color="danger"
+                        variant="danger"
                         className="gap-2 rounded-xl font-bold"
                         style={{ background: "var(--pl-accent)" }}
                         onPress={handleConfirmDonate}

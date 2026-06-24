@@ -20,6 +20,8 @@ export async function DashboardSidebar() {
     { icon: "House", href: "/dashboard", label: "Dashboard", color: "var(--pl-primary)" },
     { icon: "Droplet", href: "/dashboard/all-blood-donation-request", label: "All Requests", color: "var(--pl-accent)" },
     { icon: "Person", href: "/dashboard/profile", label: "Profile", color: "var(--pl-success)" },
+    { icon: "CirclePlus", href: "/dashboard/create-donation-request", label: "Create Request", color: "var(--pl-accent)" },
+    { icon: "ListCheck", href: "/dashboard/my-donation-requests", label: "My Requests", color: "var(--pl-info)" },
   ];
 
   const adminNavLinks = [
@@ -27,7 +29,8 @@ export async function DashboardSidebar() {
     { icon: "Persons", href: "/dashboard/all-users", label: "All Users", color: "var(--pl-warning)" },
     { icon: "Droplet", href: "/dashboard/all-blood-donation-request", label: "All Requests", color: "var(--pl-accent)" },
     { icon: "Person", href: "/dashboard/profile", label: "Profile", color: "var(--pl-success)" },
-    { icon: "Gear", href: "/dashboard/settings", label: "Settings", color: "var(--pl-ink-soft)" },
+    { icon: "CirclePlus", href: "/dashboard/create-donation-request", label: "Create Request", color: "var(--pl-accent)" },
+    { icon: "ListCheck", href: "/dashboard/my-donation-requests", label: "My Requests", color: "var(--pl-info)" },
   ];
 
   const navLinksMap = {
