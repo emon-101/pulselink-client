@@ -1,9 +1,12 @@
 import { HandHeart, Users, Wallet, TrendingUp, Calendar } from "lucide-react";
 import FundingGiveButton from "@/components/funding/FundingGiveButton";
+import { getUserSession } from "@/lib/core/session";
+import { redirect } from "next/navigation";
 
 // Static placeholder data — no funding backend exists yet (payment
 // integration is a bonus task per spec). Swap this for a real fetch
 // once that's built; the markup below is already shaped for it.
+
 const STATIC_FUNDS = [
   { name: "Tanvir Ahmed", amount: 50, date: "2026-06-18" },
   { name: "Nusrat Jahan", amount: 100, date: "2026-06-15" },
@@ -14,7 +17,12 @@ const STATIC_FUNDS = [
 
 const STATIC_TOTAL = STATIC_FUNDS.reduce((sum, f) => sum + f.amount, 0);
 
-const FundingPage = () => {
+const FundingPage = async() => {
+  const user = await getUserSession();
+  console.log(user);
+  if(!user) {
+    redirect('/auth/login');
+  }
   return (
     <div className="bg-[var(--pl-bg)]">
       {/* Hero — same layered glow treatment as the homepage Banner */}
