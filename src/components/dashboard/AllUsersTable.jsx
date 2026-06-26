@@ -1,7 +1,6 @@
 "use client";
 
-import { useMemo, useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useState, useTransition } from "react";
 import { motion } from "framer-motion";
 import {
   Select,
@@ -19,9 +18,9 @@ import {
   ShieldCheck,
   Loader2,
 } from "lucide-react";
-import { updateUserById } from "@/lib/actions/user";
 
-
+import { getAllUsersPaginated, updateUserById } from "@/lib/actions/user";
+import PaginationControl from "@/components/dashboard/PaginationControl";
 
 const STATUS_OPTIONS = [
   { id: "all", label: "All statuses" },
@@ -40,46 +39,73 @@ const ROLE_STYLES = {
   donor: "bg-[var(--pl-primary)]/10 text-[var(--pl-primary)]",
 };
 
+const PAGE_SIZE = 10;
 
-export default function AllUsersTable({ users, currentUserId }) {
-  const router = useRouter();
+/**
+ * Admin "All Users" table — server-driven pagination and status
+ * filtering (both sent as query params to GET /api/users), not
+ * client-side slicing. This matters because the two can't compose
+ * correctly the other way around: filtering a single fetched page
+ * client-side would show "0 blocked users" on a page that simply
+ * doesn't contain any, even if blocked users exist elsewhere.
+ *
+ * Three-dot dropdown per row for block/unblock and role changes — same
+ * as before, only the data-fetching model changed.
+ */
+export default function AllUsersTable({ currentUserId }) {
   const [statusFilter, setStatusFilter] = useState("all");
-  const [isPending, startTransition] = useTransition();
+  const [page, setPage] = useState(1);
+  const [users, setUsers] = useState([]);
+  const [totalPages, setTotalPages] = useState(1);
+  const [total, setTotal] = useState(0);
+
+  const [isLoading, startLoading] = useTransition();
+  const [isActing, startActing] = useTransition();
   const [actingId, setActingId] = useState(null);
 
-  const filtered = useMemo(() => {
-    if (statusFilter === "all") return users;
-    return users.filter((u) => (u.status || "active") === statusFilter);
-  }, [users, statusFilter]);
-
-  function handleAction(userId, updates) {
-    setActingId(userId);
-    startTransition(async () => {
-      await updateUserById(userId, updates);
-      router.refresh();
-      setActingId(null);
+  function fetchUsers() {
+    startLoading(async () => {
+      const result = await getAllUsersPaginated(
+        page,
+        PAGE_SIZE,
+        statusFilter === "all" ? undefined : statusFilter,
+      );
+      setUsers(result?.data || []);
+      setTotalPages(result?.totalPages || 1);
+      setTotal(result?.total ?? (result?.data?.length || 0));
     });
   }
 
-  if (!users || users.length === 0) {
-    return (
-      <div className="rounded-2xl border border-dashed border-[var(--pl-border)] bg-[var(--pl-surface)] p-10 text-center">
-        <p className="text-sm text-[var(--pl-ink-soft)]">No users found.</p>
-      </div>
-    );
+  useEffect(() => {
+    fetchUsers();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [page, statusFilter]);
+
+  function handleStatusFilterChange(value) {
+    setStatusFilter(value);
+    setPage(1); // changing the filter invalidates the current page
+  }
+
+  function handleAction(userId, updates) {
+    setActingId(userId);
+    startActing(async () => {
+      await updateUserById(userId, updates);
+      fetchUsers();
+      setActingId(null);
+    });
   }
 
   return (
     <div>
       <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <p className="text-sm text-[var(--pl-ink-soft)]">
-          {filtered.length} {filtered.length === 1 ? "user" : "users"}
+          {total} {total === 1 ? "user" : "users"}
         </p>
 
         <Select
           className="flex w-full flex-col gap-1.5 sm:w-48"
           value={statusFilter}
-          onChange={setStatusFilter}
+          onChange={handleStatusFilterChange}
         >
           <Select.Trigger className="rounded-lg border border-[var(--pl-border)] bg-[var(--pl-bg)] px-3.5 py-2.5 text-sm text-[var(--pl-ink)]">
             <Select.Value />
@@ -102,10 +128,16 @@ export default function AllUsersTable({ users, currentUserId }) {
         </Select>
       </div>
 
-      {filtered.length === 0 ? (
+      {isLoading ? (
+        <div className="flex justify-center rounded-2xl border border-[var(--pl-border)] bg-[var(--pl-surface)] py-16">
+          <Loader2 className="h-5 w-5 animate-spin text-[var(--pl-ink-soft)]" />
+        </div>
+      ) : users.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-[var(--pl-border)] bg-[var(--pl-surface)] p-10 text-center">
           <p className="text-sm text-[var(--pl-ink-soft)]">
-            No {statusFilter} users found.
+            {statusFilter === "all"
+              ? "No users found."
+              : `No ${statusFilter} users found.`}
           </p>
         </div>
       ) : (
@@ -121,12 +153,12 @@ export default function AllUsersTable({ users, currentUserId }) {
               </tr>
             </thead>
             <tbody>
-              {filtered.map((u, index) => {
+              {users.map((u, index) => {
                 const status = u.status || "active";
                 const role = u.role || "donor";
                 const userId = String(u._id || u.id);
                 const isSelf = userId === String(currentUserId);
-                const isActing = isPending && actingId === userId;
+                const rowIsActing = isActing && actingId === userId;
                 const initials = u.name
                   ? u.name
                       .split(" ")
@@ -190,7 +222,7 @@ export default function AllUsersTable({ users, currentUserId }) {
                         <span className="text-xs text-[var(--pl-ink-soft)]/60">
                           —
                         </span>
-                      ) : isActing ? (
+                      ) : rowIsActing ? (
                         <div className="flex justify-end">
                           <Loader2 className="h-4 w-4 animate-spin text-[var(--pl-ink-soft)]" />
                         </div>
@@ -210,6 +242,12 @@ export default function AllUsersTable({ users, currentUserId }) {
           </table>
         </div>
       )}
+
+      <PaginationControl
+        page={page}
+        totalPages={totalPages}
+        onPageChange={setPage}
+      />
     </div>
   );
 }

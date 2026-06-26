@@ -29,12 +29,6 @@ const sortedDistricts = [...districts].sort((a, b) =>
 export default function EditDonationRequestForm({ user, request }) {
   const router = useRouter();
 
-  // Every field is fully controlled (useState + value + onChange) rather
-  // than using defaultValue on an uncontrolled input. Mixing the two on
-  // the same element is what triggers React's "input contains both value
-  // and defaultValue" warning/error — going fully controlled everywhere
-  // avoids that entirely, regardless of how the underlying HeroUI/React
-  // Aria Input forwards props internally.
   const [recipientName, setRecipientName] = useState(request?.recipientName || "");
   const [hospitalName, setHospitalName] = useState(request?.hospitalName || "");
   const [fullAddress, setFullAddress] = useState(request?.fullAddress || "");

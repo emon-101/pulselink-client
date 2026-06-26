@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { getUserSession } from "@/lib/core/session";
-import { getAllDonationRequests } from "@/lib/actions/donation_request";
+import { getAllDonationRequestsPaginated } from "@/lib/actions/donation_request";
 import MyDonationRequestsList from "@/components/dashboard/MyDonationRequestsList";
 
 const AllBloodDonationRequestPage = async () => {
@@ -13,9 +13,6 @@ const AllBloodDonationRequestPage = async () => {
   if (user.role !== "admin" && user.role !== "volunteer") {
     redirect("/dashboard");
   }
-
-  // Unfiltered — admin/volunteer see every request, not just their own.
-  const requests = await getAllDonationRequests();
 
   const canManage = user.role === "admin";
 
@@ -31,7 +28,10 @@ const AllBloodDonationRequestPage = async () => {
       </p>
 
       <div className="mt-6">
-        <MyDonationRequestsList requests={requests} canManage={canManage} />
+        <MyDonationRequestsList
+          fetchPage={getAllDonationRequestsPaginated}
+          canManage={canManage}
+        />
       </div>
     </div>
   );
