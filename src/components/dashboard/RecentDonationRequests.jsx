@@ -19,7 +19,39 @@ const STATUS_STYLES = {
   canceled: "bg-[var(--pl-ink-soft)]/10 text-[var(--pl-ink-soft)]",
 };
 
-export default function RecentDonationRequests({ requests, canManage = true }) {
+/**
+ * Renders a list of donation requests in tabular form, with:
+ * - status badge
+ * - donor info (only visible while status === "inprogress")
+ * - done/cancel buttons (only visible while status === "inprogress")
+ * - view / edit / delete actions
+ *
+ * Used by the dashboard home (3 most recent), "My Donation Requests"
+ * (donor — full control over own requests), and "All Blood Donation
+ * Request" (admin — full control over everyone's; volunteer — status
+ * only) — same row shape, different data scope and permission level.
+ *
+ * Props:
+ * - requests: the rows to render
+ * - canManage: when false, hides view/edit/delete entirely — only the
+ *   status done/cancel buttons remain. Per spec, volunteers can update
+ *   status but are "restricted to do all other action." Defaults to
+ *   true so existing donor-facing usages (dashboard home, My Donation
+ *   Requests) keep full control without needing to pass this prop.
+ * - onActionComplete: optional callback fired after a status change or
+ *   delete succeeds, in addition to router.refresh(). router.refresh()
+ *   only re-runs Server Components on the current route — it does
+ *   nothing for a parent's own client-side useState (e.g.
+ *   MyDonationRequestsList in paginated mode fetches data itself via
+ *   useEffect and holds it in state; refreshing the server page doesn't
+ *   touch that state at all). Pass the parent's own re-fetch function
+ *   here when that's the case. No-op by default.
+ */
+export default function RecentDonationRequests({
+  requests,
+  canManage = true,
+  onActionComplete,
+}) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [actingId, setActingId] = useState(null);
@@ -29,6 +61,7 @@ export default function RecentDonationRequests({ requests, canManage = true }) {
     startTransition(async () => {
       await updateDonationRequest(id, { donationStatus: newStatus });
       router.refresh();
+      onActionComplete?.();
       setActingId(null);
     });
   }
@@ -38,6 +71,7 @@ export default function RecentDonationRequests({ requests, canManage = true }) {
     startTransition(async () => {
       await deleteDonationRequest(id);
       router.refresh();
+      onActionComplete?.();
       setActingId(null);
     });
   }
@@ -106,7 +140,9 @@ export default function RecentDonationRequests({ requests, canManage = true }) {
                       <div>{req.donorEmail}</div>
                     </div>
                   ) : (
-                    <span className="text-xs text-[var(--pl-ink-soft)]/60">—</span>
+                    <span className="text-xs text-[var(--pl-ink-soft)]/60">
+                      —
+                    </span>
                   )}
                 </td>
                 <td className="px-4 py-3">

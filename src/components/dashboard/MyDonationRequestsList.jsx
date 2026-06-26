@@ -48,8 +48,7 @@ export default function MyDonationRequestsList({
   const [total, setTotal] = useState(0);
   const [isLoading, startLoading] = useTransition();
 
-  useEffect(() => {
-    if (!isPaginatedMode) return;
+  function loadCurrentPage() {
     startLoading(async () => {
       const result = await fetchPage(
         page,
@@ -60,6 +59,11 @@ export default function MyDonationRequestsList({
       setTotalPages(result?.totalPages || 1);
       setTotal(result?.total ?? (result?.data?.length || 0));
     });
+  }
+
+  useEffect(() => {
+    if (!isPaginatedMode) return;
+    loadCurrentPage();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isPaginatedMode, page, statusFilter]);
 
@@ -117,6 +121,7 @@ export default function MyDonationRequestsList({
           <RecentDonationRequests
             requests={displayedRequests}
             canManage={canManage}
+            onActionComplete={isPaginatedMode ? loadCurrentPage : undefined}
           />
           {isPaginatedMode && (
             <PaginationControl
