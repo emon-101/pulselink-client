@@ -8,7 +8,7 @@ import DonationRequestTrendsChart from "@/components/dashboard/DonationRequestTr
 
 const DashboardPage = async () => {
   const user = await getUserSession();
-  const firstName = user?.name?.split(" ")[0] || "there";
+  const firstName = user?.name || "there";
 
   const isDonor = !user?.role || user.role === "donor";
   const isStaff = user?.role === "admin" || user?.role === "volunteer";
