@@ -10,8 +10,12 @@ export const getAllDonationRequests = async() => {
     return serverQuery('/api/donation-request');
 }
 
-export const getAllDonationRequestsPaginated = async(page = 1, limit=10) => {
-    return serverQuery('/api/donation-request', {page, limit});
+export const getAllDonationRequestsPaginated = async(page = 1, limit=10, status) => {
+     return serverQuery('/api/donation-request', {
+        page,
+        limit,
+        ...(status ? { status } : {}),
+    });
 }
 
 export const getDonationRequestTrends = async(range = 'day') => {
