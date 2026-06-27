@@ -4,18 +4,30 @@ import { headers } from 'next/headers'
 import { stripe } from '../../../lib/stripe'
 import { getUserSession } from '@/lib/core/session'
 
-export async function POST() {
+export async function POST(request) {
   try {
     const headersList = await headers()
-    const origin = headersList.get('origin')
+    const origin = headersList.get('origin') || process.env.NEXT_PUBLIC_BASE_URL
+
+    const formData = await request.formData()
+    const price = formData.get('donation');
+    const priceInCents = Math.round(parseFloat(price) * 100);
     const user = await getUserSession();
     // Create Checkout Sessions from body params.
     const session = await stripe.checkout.sessions.create({
       customer_email: user?.email,
+      payment_method_types: ['card'],
       line_items: [
         {
           // Provide the exact Price ID (for example, price_1234) of the product you want to sell
-          price: 'price_1Tlw6IPBTnXkxc2f1CgraS6x',
+          price_data: {
+            currency: 'usd',
+            product_data: {
+              name: user?.name
+            },
+            unit_amount: priceInCents
+          },
+          // price: 'price_1TmnE1F8Bs2iBVtDfgld5MBL',
           quantity: 1,
         },
       ],
@@ -24,6 +36,7 @@ export async function POST() {
       metadata: {
         userId: user?.id || '',
         userName: user?.name || '',
+        amount: price,
       }
     });
     return NextResponse.redirect(session.url, 303)

@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Modal, useOverlayState } from "@heroui/react";
+import { Button, Input, Label, Modal, useOverlayState } from "@heroui/react";
 import { HandHeart, ShieldCheck, Heart } from "lucide-react";
 
 /**
@@ -50,9 +50,9 @@ export default function FundingGiveButton() {
               <Modal.Body className="py-5">
                 <div className="flex flex-col gap-4">
                   <p className="text-sm leading-relaxed text-[var(--pl-ink-soft)]">
-                    Every contribution helps cover the cost of running
-                    PulseLink — hosting, outreach, and keeping the donor
-                    network growing across every district.
+                    Every contribution helps cover the cost of running PulseLink
+                    — hosting, outreach, and keeping the donor network growing
+                    across every district.
                   </p>
 
                   <div className="flex items-start gap-3 rounded-xl bg-[var(--pl-surface)] p-3.5">
@@ -61,40 +61,48 @@ export default function FundingGiveButton() {
                       fill="currentColor"
                     />
                     <p className="text-xs text-[var(--pl-ink-soft)]">
-                      100% of what you give goes toward keeping the
-                      platform free for donors and recipients alike.
+                      100% of what you give goes toward keeping the platform
+                      free for donors and recipients alike.
                     </p>
                   </div>
 
                   <div className="flex items-start gap-3 rounded-xl bg-[var(--pl-surface)] p-3.5">
                     <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-[var(--pl-info)]" />
                     <p className="text-xs text-[var(--pl-ink-soft)]">
-                      You&#39;ll be redirected to Stripe&#39;s secure checkout to
-                      complete your payment.
+                      You&#39;ll be redirected to Stripe&#39;s secure checkout
+                      to complete your payment.
                     </p>
                   </div>
                 </div>
+                <form
+                  action="/api/checkout_sessions"
+                  method="POST"
+                  className="flex flex-col gap-5 border-t border-[var(--pl-border)] pt-4 mt-4"
+                >
+                  <div className="flex flex-col gap-2 w-full">
+                    <Label htmlFor="input-type-number">Donation Amount</Label>
+                    <Input
+                      name="donation"
+                      id="input-type-number"
+                      min={0}
+                      placeholder="30"
+                      type="number"
+                      required
+                    />
+                  </div>
+                  <div className="flex gap-4 items-center justify-end">
+                    <Button variant="ghost" onPress={modalState.close}>
+                      Maybe Later
+                    </Button>
+                    <Button type="submit" variant="primary" className="gap-2">
+                      <HandHeart className="h-4 w-4" />
+                      Confirm &amp; Pay
+                    </Button>
+                  </div>
+                </form>
               </Modal.Body>
 
-              <Modal.Footer className="border-t border-[var(--pl-border)] pt-4">
-                <Button variant="ghost" onPress={modalState.close}>
-                  Maybe Later
-                </Button>
-
-                {/*
-                  Real form POST — no fields needed, since the route uses
-                  a fixed Stripe Price ID rather than reading an amount
-                  from the request body. Submitting this navigates the
-                  browser to /api/checkout_sessions, which redirects
-                  straight to Stripe's hosted checkout page.
-                */}
-                <form action="/api/checkout_sessions" method="POST">
-                  <Button type="submit" variant="primary" className="gap-2">
-                    <HandHeart className="h-4 w-4" />
-                    Confirm &amp; Pay
-                  </Button>
-                </form>
-              </Modal.Footer>
+              <Modal.Footer className="border-t border-[var(--pl-border)] pt-4"></Modal.Footer>
             </Modal.Dialog>
           </Modal.Container>
         </Modal.Backdrop>

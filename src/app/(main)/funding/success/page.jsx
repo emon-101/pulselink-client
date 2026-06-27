@@ -1,14 +1,8 @@
 import Link from "next/link";
 import { CheckCircle2, ArrowLeft } from "lucide-react";
 import { stripe } from "@/lib/stripe";
+import { createFundingInfo } from "@/lib/actions/funding";
 
-/**
- * /funding/success
- * Where Stripe redirects after a completed Checkout Session, per the
- * success_url in app/api/checkout_sessions/route.js. Retrieves the
- * session by the ?session_id= query param Stripe appends, to confirm
- * payment actually succeeded rather than just trusting the redirect.
- */
 const FundingSuccessPage = async ({ searchParams }) => {
   const { session_id } = await searchParams;
 
@@ -22,6 +16,25 @@ const FundingSuccessPage = async ({ searchParams }) => {
       error = err.message;
     }
   }
+
+  const {
+        status,
+        customer_details: { email: customerEmail },
+        metadata
+    } = await stripe.checkout.sessions.retrieve(session_id, {
+        expand: ['line_items', 'payment_intent']
+    })
+
+    const paymentInfo = {
+      email: customerEmail,
+      userId: metadata.userId,
+      userName: metadata.userName,
+      amount: Number(metadata.amount)
+    }
+
+    const res = await createFundingInfo(paymentInfo);
+
+    console.log(res);
 
   const paid = session?.payment_status === "paid";
 
