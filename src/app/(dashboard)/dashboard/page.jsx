@@ -5,6 +5,7 @@ import { getDashboardStats } from "@/lib/actions/stats";
 import RecentDonationRequests from "@/components/dashboard/RecentDonationRequests";
 import DashboardStatCards from "@/components/dashboard/DashboardStatCards";
 import DonationRequestTrendsChart from "@/components/dashboard/DonationRequestTrendsChart";
+import { getFundingInfo } from "@/lib/actions/funding";
 
 const DashboardPage = async () => {
   const user = await getUserSession();
@@ -16,6 +17,12 @@ const DashboardPage = async () => {
 
   let recentRequests = [];
   let stats = null;
+
+  const {
+    data: allFundings = [],
+    totalAmount = 0,
+    totalContributors = 0,
+  } = (await getFundingInfo()) || {};
 
   if (isDonor) {
     const allRequests = await getMyDonationRequests(user?.id);
@@ -36,9 +43,8 @@ const DashboardPage = async () => {
         Welcome, {firstName}
       </h1>
       <p className="mt-3 max-w-2xl text-base leading-relaxed text-[var(--pl-ink-soft)]">
-        Manage your donation requests, keep your profile up to date, and stay
-        on top of every connection PulseLink helps you make — all from one
-        place.
+        Manage your donation requests, keep your profile up to date, and stay on
+        top of every connection PulseLink helps you make — all from one place.
       </p>
 
       {/* Admin / volunteer: featured stat cards. Same welcome section as
@@ -47,10 +53,7 @@ const DashboardPage = async () => {
         <div className="mt-8">
           <DashboardStatCards
             totalDonors={stats?.totalDonors ?? 0}
-            // No funding backend yet (bonus task per spec) — static
-            // placeholder until payment integration exists. Swap this
-            // for a real value from getDashboardStats() once it does.
-            totalFunding="$0"
+            totalFunding={`$${totalAmount}`}
             totalRequests={stats?.totalRequests ?? 0}
           />
         </div>
